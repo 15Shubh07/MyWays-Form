@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWays Form</title>
+    <style>
+        form{
+            display:flex;
+            flex-direction:column;
+            align-items: center;
+        }
+        label,input{
+            margin:10px;
+        }
+        input[type="submit"]{
+            margin-top:20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>
+        User Form 
+    </h1>
+    <form id="user-form">
+        <label for="Name">Name</label>
+        <input type="text" id="name" required>
+        <label for="email">Email</label>
+        <input type="text" id="name" required>
+        <label for="email">Phone</label>
+        <input type="tel" id="Phone" required>
+        <input type="submit" value="submit">
+    </form>
+    <script>
+        const form=documentgetElementById("user-form");
+        form.addEventListener("submit",(event)=>{
+            event.preventDefault();
+            const name=documentgetElementById("name").value;
+            const email=documentgetElementById("email").value;
+            const phone=documentgetElementById("phone").value;
+            fetch("https://test-api-v3.myways.ai/user?email=$(email)")
+            .then(response=>{
+                if(response.ok){
+                    return response.json();
+                }
+                else{
+                    throw new Error("Network Not OK");
+                }
+            })
+            .then(data =>{
+                if(data.length>0){
+                    alert("User found");
+                }
+                else{
+                    fetch("https://test-api-v3.myways.ai/user",{
+                        method:"POST",
+                        headers:{
+                            "Content-Type":"application/json"
+                        },
+                        body:JSON.stringfy({
+                            name,
+                            email,
+                            phone
+                        })
+                    })
+                    .then(response =>{
+                        if(response.ok){
+                            alert("User created successfully");
+                            form.reset();
+                        }
+                        else{
+                            throw new Error("NETWORK RESPONSE WAS NOT OK");
+                        }
+                    })
+                    .catch(error => console.error(error));
+                }
+            })
+            .catch(error => console.error(error));
+        })
+    </script>
+    
+</body>
+</html>
